@@ -8,6 +8,7 @@
 #include "buffers/gfx_output_buffer.h"
 #include "buffers/framebuffers.h"
 #include "buffers/zbuffer.h"
+#include "capture/frame_buffer_capture.h"
 #include "engine/level_script.h"
 #include "game_init.h"
 #include "main.h"
@@ -24,6 +25,7 @@
 #ifdef BETTERCAMERA
 #include "bettercamera.h"
 #endif
+#include <stdio.h>
 
 // FIXME: I'm not sure all of these variables belong in this file, but I don't
 // know of a good way to split them
@@ -596,6 +598,9 @@ void game_loop_one_iteration(void) {
     read_controller_inputs();
     levelCommandAddr = level_script_execute(levelCommandAddr);
     display_and_vsync();
+
+    u16* phyFrameBuffer0Ptr = (u16*)PHYSICAL_TO_VIRTUAL(gPhysicalFrameBuffers[0]);
+    capture_framebuffer("framebuffer.ppm", phyFrameBuffer0Ptr, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     // when debug info is enabled, print the "BUF %d" information.
     if (gShowDebugText) {
