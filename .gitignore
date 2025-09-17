@@ -81,3 +81,6 @@ sm64config.txt
 
 # macOS bullcrap directory settings file thats autocreated
 .DS_Store
+
+# Ensure no test ppm files are added
+*.ppm
