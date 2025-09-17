@@ -24,6 +24,8 @@
 #include "gfx_rendering_api.h"
 #include "gfx_screen_config.h"
 
+#include "capture/frame_buffer_capture.h"
+
 #include "../platform.h"
 #include "../configfile.h"
 #include "../fs/fs.h"
@@ -1803,6 +1805,8 @@ void gfx_run(Gfx *commands) {
 
 void gfx_end_frame(void) {
     if (!dropped_frame) {
+        capture_opengl_framebuffer("framebuffer.ppm");
+
         gfx_rapi->finish_render();
         gfx_wapi->swap_buffers_end();
     }

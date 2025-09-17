@@ -599,9 +599,6 @@ void game_loop_one_iteration(void) {
     levelCommandAddr = level_script_execute(levelCommandAddr);
     display_and_vsync();
 
-    u16* phyFrameBuffer0Ptr = (u16*)PHYSICAL_TO_VIRTUAL(gPhysicalFrameBuffers[0]);
-    capture_framebuffer("framebuffer.ppm", phyFrameBuffer0Ptr, SCREEN_WIDTH, SCREEN_HEIGHT);
-
     // when debug info is enabled, print the "BUF %d" information.
     if (gShowDebugText) {
         // subtract the end of the gfx pool with the display list to obtain the
