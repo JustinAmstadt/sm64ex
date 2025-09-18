@@ -6,7 +6,7 @@
 
 #include "controller_recorded_tas.h"
 #include "controller_keyboard.h"
-#include "controller_auto_a.h"
+#include "controller_websocket.h"
 #include "controller_sdl.h"
 
 // Analog camera movement by Pathétique (github.com/vrmiguel), y0shin and Mors
@@ -18,7 +18,7 @@ static struct ControllerAPI *controller_implementations[] = {
     &controller_sdl,
     #endif
     &controller_keyboard,
-    &controller_auto_a  // Auto press A every 0.2 seconds
+    &controller_websocket
 };
 
 s32 osContInit(UNUSED OSMesgQueue *mq, u8 *controllerBits, UNUSED OSContStatus *status) {

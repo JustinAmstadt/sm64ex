@@ -84,3 +84,5 @@ sm64config.txt
 
 # Ensure no test ppm files are added
 *.ppm
+
+**/__pycache__
