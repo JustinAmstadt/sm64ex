@@ -127,6 +127,7 @@ void game_deinit(void) {
     controller_shutdown();
     audio_shutdown();
     gfx_shutdown();
+    close_logging_file();
     inited = false;
 }
 
@@ -171,12 +172,40 @@ static void on_anim_frame(double time) {
 }
 #endif
 
+void logging_setup(char *logging_path, size_t size) {
+    long long date_time_millis = current_time_millis();
+
+    char buffer[50];
+    char root_folder[50] = "data_store";
+    snprintf(buffer, sizeof(buffer), "%lld", date_time_millis);
+    strncat(buffer, ".csv", sizeof(buffer) - strlen(buffer) -1 );
+
+    snprintf(logging_path, size, "%s/%s", root_folder, buffer);
+
+    keyboard_input_logging_file = fopen(logging_path, "w");
+    if (keyboard_input_logging_file == NULL) {
+        perror("Error opening file");
+    }
+
+    fprintf(keyboard_input_logging_file, "Buttons,Stick_X,Stick_Y,Framebuffer_Path\n");
+
+    snprintf(framebuffer_folder_name, sizeof(framebuffer_folder_name), "data_store/framebuffers/%lld", date_time_millis);
+
+    if (mkdir(framebuffer_folder_name, 0755) == 0) {
+        printf("Framebuffer directory created successfully.\n");
+    } else {
+        perror("mkdir failed");
+    }
+}
+
 void main_func(void) {
     const char *gamedir = gCLIOpts.GameDir[0] ? gCLIOpts.GameDir : FS_BASEDIR;
     const char *userpath = gCLIOpts.SavePath[0] ? gCLIOpts.SavePath : sys_user_path();
     fs_init(sys_ropaths, gamedir, userpath);
 
     configfile_load(configfile_name());
+
+    logging_setup(keyboard_input_logging_path, keyboard_input_logging_path_size);
 
     if (gCLIOpts.FullScreen == 1)
         configWindow.fullscreen = true;

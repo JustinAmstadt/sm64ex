@@ -9,6 +9,7 @@
 #include "buffers/framebuffers.h"
 #include "buffers/zbuffer.h"
 #include "capture/frame_buffer_capture.h"
+#include "capture/capture_keyboard.h"
 #include "engine/level_script.h"
 #include "game_init.h"
 #include "main.h"
@@ -21,7 +22,10 @@
 #include "segment2.h"
 #include "segment_symbols.h"
 #include "thread6.h"
+#include "util/util.h"
 #include <prevent_bss_reordering.h>
+#include <string.h>
+#include <stdbool.h>
 #ifdef BETTERCAMERA
 #include "bettercamera.h"
 #endif
@@ -64,6 +68,11 @@ struct Controller *gPlayer3Controller = &gControllers[2];
 struct DemoInput *gCurrDemoInput = NULL; // demo input sequence
 u16 gDemoInputListID = 0;
 struct DemoInput gRecordedDemoInput = { 0 }; // possibly removed in EU. TODO: Check
+
+char keyboard_input_logging_path[150];
+size_t keyboard_input_logging_path_size = sizeof(keyboard_input_logging_path);
+FILE *keyboard_input_logging_file;
+extern char framebuffer_folder_name[100] = "";
 
 /**
  * Initializes the Reality Display Processor (RDP).
@@ -559,6 +568,9 @@ void setup_game_memory(void) {
     load_segment_decompress(2, _segment2_mio0SegmentRomStart, _segment2_mio0SegmentRomEnd);
 }
 
+void close_logging_file(void) {
+    fclose(keyboard_input_logging_file);
+}
 
 static struct LevelCommand *levelCommandAddr;
 
@@ -583,6 +595,12 @@ void thread5_game_loop(UNUSED void *arg) {
     gGlobalTimer++;
 }
 
+void get_framebuffer_file_path(char *file_path, size_t size) {
+    char frame_count_str[20];
+    sprintf(frame_count_str, "%d", gGlobalTimer);
+    snprintf(file_path, size, "%s/%s.bin", framebuffer_folder_name, frame_count_str);
+}
+
 void game_loop_one_iteration(void) {
     profiler_log_thread5_time(THREAD5_START);
 
@@ -596,6 +614,13 @@ void game_loop_one_iteration(void) {
     audio_game_loop_tick();
     config_gfx_pool();
     read_controller_inputs();
+
+    char framebuffer_file_path[100];
+    get_framebuffer_file_path(framebuffer_file_path, sizeof(framebuffer_file_path));
+
+    capture_opengl_framebuffer(framebuffer_file_path);
+    capture_keyboard_input(keyboard_input_logging_file, gControllerPads[0].button, gControllerPads[0].stick_x, gControllerPads[0].stick_y, framebuffer_file_path);
+
     levelCommandAddr = level_script_execute(levelCommandAddr);
     display_and_vsync();
 

@@ -86,3 +86,5 @@ sm64config.txt
 *.ppm
 
 **/__pycache__
+**/data_store/
+**/*.png

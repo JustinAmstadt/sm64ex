@@ -7,7 +7,8 @@ async def hello():
     uri = "ws://localhost:8080"  # Replace with your server address
     async with websockets.connect(uri, subprotocols=[]) as websocket:
         # Send a message
-        await websocket.send(str(int(ControllerButton.A_BUTTON)))
+        for _ in range(10):
+            await websocket.send(str(int(ControllerButton.A_BUTTON)))
         print("Message sent to server.")
 
 

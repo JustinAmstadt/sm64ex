@@ -1805,8 +1805,6 @@ void gfx_run(Gfx *commands) {
 
 void gfx_end_frame(void) {
     if (!dropped_frame) {
-        capture_opengl_framebuffer("framebuffer.ppm");
-
         gfx_rapi->finish_render();
         gfx_wapi->swap_buffers_end();
     }

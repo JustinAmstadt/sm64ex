@@ -6,6 +6,8 @@
 #include <PR/os_cont.h>
 #include <PR/os_message.h>
 
+#include <stdio.h>
+
 #include "types.h"
 #include "memory.h"
 
@@ -60,6 +62,11 @@ extern u8 gDemoInputs[];
 extern u16 frameBufferIndex;
 extern u32 gGlobalTimer;
 
+extern char keyboard_input_logging_path[150];
+extern size_t keyboard_input_logging_path_size;
+extern FILE *keyboard_input_logging_file;
+extern char framebuffer_folder_name[100];
+
 void setup_game_memory(void);
 void thread5_game_loop(UNUSED void *arg);
 void clear_frame_buffer(s32 color);
@@ -70,5 +77,6 @@ void end_master_display_list(void);
 void rendering_init(void);
 void config_gfx_pool(void);
 void display_and_vsync(void);
+void close_logging_file(void);
 
 #endif // GAME_INIT_H

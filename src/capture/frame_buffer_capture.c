@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef RAPI_GL
 #include <GL/gl.h>
@@ -37,27 +38,16 @@ void capture_opengl_framebuffer(const char* filename) {
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
 
+    // Write raw binary file
     FILE* fp = fopen(filename, "wb");
     if (!fp) {
-        printf("Failed to open file\n");
+        printf("Failed to open framebuffer file: %s\n", filename);
         free(pixels);
         return;
     }
 
-    fprintf(fp, "P6\n%d %d\n255\n", width, height);
-
-    // Write from bottom to top to flip the image
-    for (int y = height - 1; y >= 0; y--) {
-        size_t offset = (size_t)y * row_size;
-        if (offset + row_size > buffer_size) {
-            printf("ERROR: Buffer overflow at row %d (offset %zu + %zu > %zu)\n",
-                   y, offset, row_size, buffer_size);
-            fclose(fp);
-            free(pixels);
-            return;
-        }
-        fwrite(pixels + offset, 1, row_size, fp);
-    }
+    // Write raw framebuffer data as-is (bottom-to-top from OpenGL)
+    fwrite(pixels, 1, buffer_size, fp);
     fclose(fp);
     free(pixels);
 #else
