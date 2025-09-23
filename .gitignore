@@ -88,3 +88,4 @@ sm64config.txt
 **/__pycache__
 **/data_store/
 **/*.png
+**/*.pt
