@@ -10,6 +10,7 @@
 #include "buffers/zbuffer.h"
 #include "capture/frame_buffer_capture.h"
 #include "capture/capture_keyboard.h"
+#include "../pc/cliopts.h"
 #include "engine/level_script.h"
 #include "game_init.h"
 #include "main.h"
@@ -615,11 +616,13 @@ void game_loop_one_iteration(void) {
     config_gfx_pool();
     read_controller_inputs();
 
-    char framebuffer_file_path[100];
-    get_framebuffer_file_path(framebuffer_file_path, sizeof(framebuffer_file_path));
+    if (gCLIOpts.MLDataLog == 1) {
+        char framebuffer_file_path[100];
+        get_framebuffer_file_path(framebuffer_file_path, sizeof(framebuffer_file_path));
 
-    capture_opengl_framebuffer(framebuffer_file_path);
-    capture_keyboard_input(keyboard_input_logging_file, gControllerPads[0].button, gControllerPads[0].stick_x, gControllerPads[0].stick_y, framebuffer_file_path);
+        capture_opengl_framebuffer(framebuffer_file_path);
+        capture_keyboard_input(keyboard_input_logging_file, gControllerPads[0].button, gControllerPads[0].stick_x, gControllerPads[0].stick_y, framebuffer_file_path);
+    }
 
     levelCommandAddr = level_script_execute(levelCommandAddr);
     display_and_vsync();

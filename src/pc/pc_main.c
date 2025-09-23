@@ -127,7 +127,11 @@ void game_deinit(void) {
     controller_shutdown();
     audio_shutdown();
     gfx_shutdown();
-    close_logging_file();
+
+    if (gCLIOpts.MLDataLog == 1) {
+        close_logging_file();
+    }
+
     inited = false;
 }
 
@@ -205,7 +209,9 @@ void main_func(void) {
 
     configfile_load(configfile_name());
 
-    logging_setup(keyboard_input_logging_path, keyboard_input_logging_path_size);
+    if (gCLIOpts.MLDataLog == 1) {
+        logging_setup(keyboard_input_logging_path, keyboard_input_logging_path_size);
+    }
 
     if (gCLIOpts.FullScreen == 1)
         configWindow.fullscreen = true;

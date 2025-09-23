@@ -22,6 +22,7 @@ static void print_help(void) {
     printf("%-20s\tStarts the game in full screen mode.\n", "--fullscreen");
     printf("%-20s\tSkips the Peach and Castle intro when starting a new game.\n", "--skip-intro");
     printf("%-20s\tStarts the game in windowed mode.\n", "--windowed");
+    printf("%-20s\tLogs game data for ML.\n", "--log-ml-data");
 }
 
 static inline int arg_string(const char *name, const char *value, char *target) {
@@ -57,6 +58,9 @@ void parse_cli_opts(int argc, char* argv[]) {
 
         else if (strcmp(argv[i], "--cheats") == 0) // Enable cheats menu
             Cheats.EnableCheats = true;
+
+        else if (strcmp(argv[i], "--log-ml-data") == 0) // Enable cheats menu
+            gCLIOpts.MLDataLog = 1;
 
         else if (strcmp(argv[i], "--poolsize") == 0) // Main pool size
             arg_uint("--poolsize", argv[++i], &gCLIOpts.PoolSize);
