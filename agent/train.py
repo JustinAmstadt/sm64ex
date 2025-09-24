@@ -46,7 +46,19 @@ def main():
 
     val_size = int(len(dataset) * args.val_split)
     train_size = len(dataset) - val_size
-    train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+
+    # Ensure we have at least 1 sample for training and validation
+    if train_size < 1:
+        print(f"Warning: Dataset too small for validation split. Using all {len(dataset)} samples for training.")
+        train_dataset = dataset
+        val_dataset = None
+    elif val_size < 1:
+        print(f"Warning: Validation set would be empty. Using 1 sample for validation.")
+        val_size = 1
+        train_size = len(dataset) - val_size
+        train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+    else:
+        train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
 
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
@@ -56,16 +68,20 @@ def main():
         pin_memory=True
     )
 
-    val_loader = torch.utils.data.DataLoader(
-        val_dataset,
-        batch_size=args.batch_size,
-        shuffle=False,
-        num_workers=2,
-        pin_memory=True
-    )
-
-    print(f"Training samples: {len(train_dataset)}")
-    print(f"Validation samples: {len(val_dataset)}")
+    if val_dataset is not None:
+        val_loader = torch.utils.data.DataLoader(
+            val_dataset,
+            batch_size=args.batch_size,
+            shuffle=False,
+            num_workers=2,
+            pin_memory=True
+        )
+        print(f"Training samples: {len(train_dataset)}")
+        print(f"Validation samples: {len(val_dataset)}")
+    else:
+        val_loader = None
+        print(f"Training samples: {len(train_dataset)}")
+        print("Validation: Disabled (dataset too small)")
 
     print("\nComputing dataset statistics...")
     stats = compute_dataset_statistics(train_loader)
@@ -80,7 +96,7 @@ def main():
         print(f"Most used buttons: {', '.join(most_used_buttons[:5])}")
 
     model = SM64Agent()
-    trainer = SM64Trainer(model, device=args.device)
+    trainer = SM64Trainer(model, device=args.device, lr=args.lr)
 
     if args.checkpoint:
         checkpoint_path = Path(args.checkpoint)

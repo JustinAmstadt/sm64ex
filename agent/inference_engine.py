@@ -104,7 +104,8 @@ class RealtimeInferenceEngine:
             with self.lock:
                 self.stats['frames_processed'] += 1
                 self.stats['inference_time_ms'] = inference_time
-                self.stats['fps'] = 1.0 / (time.time() - last_inference_time)
+                elapsed_time = time.time() - last_inference_time
+                self.stats['fps'] = 1.0 / elapsed_time if elapsed_time > 0 else 0
 
             processed_action = self.post_process_action(action)
 

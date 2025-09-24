@@ -100,7 +100,8 @@ class SM64WebSocketAgent:
                             self.frame_count += 1
                             current_time = time.time()
                             if current_time - self.last_frame_time > 0:
-                                self.fps = 1.0 / (current_time - self.last_frame_time)
+                                elapsed = current_time - self.last_frame_time
+                                self.fps = 1.0 / elapsed if elapsed > 0 else 0
                             self.last_frame_time = current_time
 
                             if current_time - last_status_time > 1.0:

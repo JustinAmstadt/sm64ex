@@ -12,5 +12,6 @@ async def hello():
         print("Message sent to server.")
 
 
-# Run the client
-asyncio.run(hello())
+if __name__ == "__main__":
+    # Run the client
+    asyncio.run(hello())

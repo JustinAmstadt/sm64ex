@@ -26,7 +26,17 @@ class SM64Dataset(Dataset):
         ])
 
     def _load_data(self):
+        if not self.data_dir.exists():
+            print(f"Warning: Data directory {self.data_dir} does not exist")
+            return
+
         csv_files = list(self.data_dir.glob('*.csv'))
+        if not csv_files:
+            print(f"Warning: No CSV files found in {self.data_dir}")
+            return
+
+        skipped_files = 0
+        loaded_files = 0
 
         for csv_file in csv_files:
             with open(csv_file, 'r') as f:
@@ -53,6 +63,14 @@ class SM64Dataset(Dataset):
                             'stick_x': stick_x,
                             'stick_y': stick_y
                         })
+                        loaded_files += 1
+                    else:
+                        skipped_files += 1
+
+        if skipped_files > 0:
+            print(f"Warning: Skipped {skipped_files} frames with missing framebuffer files")
+        if loaded_files > 0:
+            print(f"Successfully loaded {loaded_files} frames from {len(csv_files)} CSV file(s)")
 
     def _load_framebuffer(self, path):
         with open(path, 'rb') as f:

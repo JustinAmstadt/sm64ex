@@ -8,14 +8,14 @@ from datetime import datetime
 
 
 class SM64Trainer:
-    def __init__(self, model, device='cuda' if torch.cuda.is_available() else 'cpu'):
+    def __init__(self, model, device='cuda' if torch.cuda.is_available() else 'cpu', lr=1e-4):
         self.model = model.to(device)
         self.device = device
 
         self.criterion_buttons = nn.BCEWithLogitsLoss()
         self.criterion_stick = nn.MSELoss()
 
-        self.optimizer = optim.AdamW(model.parameters(), lr=1e-4, weight_decay=0.01)
+        self.optimizer = optim.AdamW(model.parameters(), lr=lr, weight_decay=0.01)
         self.scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, T_max=100)
 
         self.best_loss = float('inf')
@@ -73,9 +73,9 @@ class SM64Trainer:
                 'stick': f"{losses['stick'].item():.4f}"
             })
 
-        avg_loss = total_loss / num_batches
-        avg_button_loss = button_loss_sum / num_batches
-        avg_stick_loss = stick_loss_sum / num_batches
+        avg_loss = total_loss / num_batches if num_batches > 0 else 0
+        avg_button_loss = button_loss_sum / num_batches if num_batches > 0 else 0
+        avg_stick_loss = stick_loss_sum / num_batches if num_batches > 0 else 0
 
         return avg_loss, avg_button_loss, avg_stick_loss
 
@@ -103,9 +103,9 @@ class SM64Trainer:
                 stick_error += torch.abs(output['stick'] - stick).mean().item()
                 num_batches += 1
 
-        avg_loss = total_loss / num_batches
-        avg_button_acc = button_accuracy / num_batches
-        avg_stick_error = stick_error / num_batches
+        avg_loss = total_loss / num_batches if num_batches > 0 else 0
+        avg_button_acc = button_accuracy / num_batches if num_batches > 0 else 0
+        avg_stick_error = stick_error / num_batches if num_batches > 0 else 0
 
         return avg_loss, avg_button_acc, avg_stick_error
 

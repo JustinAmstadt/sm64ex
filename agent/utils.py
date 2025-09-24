@@ -171,11 +171,11 @@ def compute_dataset_statistics(dataloader):
     total_samples = len(dataloader.dataset)
 
     stats = {
-        'button_frequencies': button_counts / total_samples,
-        'stick_x_mean': np.mean(stick_values_x),
-        'stick_x_std': np.std(stick_values_x),
-        'stick_y_mean': np.mean(stick_values_y),
-        'stick_y_std': np.std(stick_values_y),
+        'button_frequencies': button_counts / total_samples if total_samples > 0 else np.zeros(16),
+        'stick_x_mean': np.mean(stick_values_x) if stick_values_x else 0,
+        'stick_x_std': np.std(stick_values_x) if stick_values_x else 0,
+        'stick_y_mean': np.mean(stick_values_y) if stick_values_y else 0,
+        'stick_y_std': np.std(stick_values_y) if stick_values_y else 0,
         'total_samples': total_samples
     }
 
